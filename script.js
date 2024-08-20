@@ -49,55 +49,6 @@ function initGame() {
     updateScore();
 }
 
-function gameLoop() {
-    if (gameOver) return;
-
-    direction = newDirection;
-
-    const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
-
-    if (head.x < 0 || head.x >= tileCountX || head.y < 0 || head.y >= tileCountY || snake.some(segment => segment.x === head.x && segment.y === head.y)) {
-        gameOver = true;
-        alert("Fim de Jogo! Tente novamente.");
-        if (score > highScore) {
-            highScore = score;
-        }
-        initGame();
-        return;
-    }
-
-    snake.unshift(head);
-
-    if (head.x === food.x && head.y === food.y) {
-        food = {
-            x: Math.floor(Math.random() * tileCountX),
-            y: Math.floor(Math.random() * tileCountY)
-        };
-
-        score++;
-        updateScore();
-
-        if (score % 5 === 0 && speed > 50) {
-            speed -= 20;
-            clearInterval(intervalId);
-            intervalId = setInterval(gameLoop, speed);
-        }
-    } else {
-        snake.pop();
-    }
-
-    ctx.fillStyle = "#500087"; // Cor do fundo
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.fillStyle = "#FFFFFF"; // Cor da cobra
-    snake.forEach(segment => {
-        ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize, gridSize);
-    });
-
-    ctx.fillStyle = "#FFFCE7"; // Cor da comida
-    ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize, gridSize);
-}
-
 function changeDirection(event) {
     switch (event.keyCode) {
         case 37: // Esquerda
@@ -117,6 +68,54 @@ function changeDirection(event) {
             if (direction.y === 0) newDirection = { x: 0, y: 1 };
             break;
     }
+}
+
+function gameLoop() {
+    if (gameOver) return;
+
+    direction = newDirection; // Atualiza a direção com a nova direção
+
+    const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
+
+    if (head.x < 0 || head.x >= tileCountX || head.y < 0 || head.y >= tileCountY || snake.some(segment => segment.x === head.x && segment.y === head.y)) {
+        gameOver = true;
+        gameOverScreen.style.display = 'block'; // Exibe tela de game over
+        if (score > highScore) {
+            highScore = score;
+        }
+        return;
+    }
+
+    snake.unshift(head);
+
+    if (head.x === food.x && head.y === food.y) {
+        food = {
+            x: Math.floor(Math.random() * tileCountX),
+            y: Math.floor(Math.random() * tileCountY)
+        };
+
+        score++;
+        updateScore();
+
+        if (score % 10 === 0 && speed > 50) {
+            speed -= 20;
+            clearInterval(intervalId);
+            intervalId = setInterval(gameLoop, speed);
+        }
+    } else {
+        snake.pop();
+    }
+
+    ctx.fillStyle = "#500087"; // Cor do fundo
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#FFFFFF"; // Cor da cobra
+    snake.forEach(segment => {
+        ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize, gridSize);
+    });
+
+    ctx.fillStyle = "#FFFCE7"; // Cor da comida
+    ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize, gridSize);
 }
 
 function updateScore() {
