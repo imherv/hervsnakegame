@@ -67,15 +67,29 @@ function changeDirection(event) {
         case 83: // S
             if (direction.y === 0) newDirection = { x: 0, y: 1 };
             break;
+        case 82: // R
+            if (gameOver) {
+                initGame(); // Reinicia o jogo mantendo o high score
+            }
+            break;
+        case 32: // Espaço
+            if (!gameOver) {
+                isPaused = !isPaused; // Alterna o estado de pausa
+            }
+            break;
     }
 }
 
 function gameLoop() {
     if (gameOver) {
         if (confirm("Game Over! Deseja reiniciar?")) {
-            initGame(); // Reinicia o jogo
+            initGame(); // Reinicia o jogo mantendo o high score
         }
         return;
+    }
+
+    if (isPaused) {
+        return; // Se o jogo estiver pausado, não faz nada
     }
 
     direction = newDirection; // Atualiza a direção com a nova direção
