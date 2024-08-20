@@ -1,7 +1,5 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
-const gameOverScreen = document.getElementById("gameOverScreen");
-const restartButton = document.getElementById("restartButton");
 
 let tileCountX, tileCountY, gridSize;
 
@@ -49,7 +47,6 @@ function initGame() {
     intervalId = setInterval(gameLoop, speed);
 
     updateScore();
-    gameOverScreen.style.display = 'none'; // Esconde tela de game over
 }
 
 function gameLoop() {
@@ -126,13 +123,8 @@ function updateScore() {
     document.getElementById("score").innerText = `Pontos: ${score}`;
     document.getElementById("highScore").innerText = `Pontuação mais alta: ${highScore}`;
 }
-        
-function restartGame() {
-    initGame();
-}
 
 window.addEventListener("resize", resizeGame);
 document.addEventListener("keydown", changeDirection);
-restartButton.addEventListener("click", restartGame);
 
 resizeGame();
