@@ -22,6 +22,7 @@ let food = {};
 let direction = {};
 let newDirection = {};
 let gameOver = false;
+let isPaused = false; // Adiciona uma variável para controlar o estado de pausa
 let speed = 250;
 let intervalId;
 let score = 0;
@@ -38,6 +39,7 @@ function initGame() {
     direction = { x: 1, y: 0 };
     newDirection = { x: 1, y: 0 };
     gameOver = false;
+    isPaused = false; // Reinicia o estado de pausa
     score = 0;
     speed = 250;
 
