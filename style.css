@@ -3,7 +3,7 @@
 body {
     margin: 0;
     padding: 0;
-    background-color: #333; /* Cor de fundo do corpo */
+    background-color: #500087; /* Cor de fundo roxo escuro */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -13,17 +13,15 @@ body {
 
 #gameContainer {
     position: relative;
-    border: 5px solid #500087; /* Borda escura em torno do jogo */
     padding: 10px;
-    background: #000; /* Cor de fundo do container */
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); /* Sombra para um efeito 3D */
+    background: #500087; /* Cor de fundo do container */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Sombra para um efeito suave */
 }
 
 #gameCanvas {
     display: block;
     background-color: #500087; /* Cor de fundo do canvas */
-    border: 2px solid #FFFFFF; /* Borda clara do canvas */
-    box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.5); /* Efeito de brilho interno */
+    border: 2px solid #FFFCE7; /* Borda clara do canvas para contraste */
 }
 
 #scoreBoard {
