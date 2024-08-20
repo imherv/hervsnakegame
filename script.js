@@ -71,7 +71,12 @@ function changeDirection(event) {
 }
 
 function gameLoop() {
-    if (gameOver) return;
+    if (gameOver) {
+        if (confirm("Game Over! Deseja reiniciar?")) {
+            initGame(); // Reinicia o jogo
+        }
+        return;
+    }
 
     direction = newDirection; // Atualiza a direção com a nova direção
 
@@ -79,10 +84,10 @@ function gameLoop() {
 
     if (head.x < 0 || head.x >= tileCountX || head.y < 0 || head.y >= tileCountY || snake.some(segment => segment.x === head.x && segment.y === head.y)) {
         gameOver = true;
-        gameOverScreen.style.display = 'block'; // Exibe tela de game over
         if (score > highScore) {
             highScore = score;
         }
+        updateScore();
         return;
     }
 
