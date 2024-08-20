@@ -30,5 +30,9 @@ body {
     left: 10px;
     color: #FFFCE7; /* Cor do texto do placar */
     font-size: 16px;
-    font-weight: bold;
+    font-weight: bold; /* Texto em negrito */
+}
+
+#scoreBoard div {
+    margin: 0;
 }
