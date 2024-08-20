@@ -1,133 +1,36 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
 
 body {
     margin: 0;
-    font-family: 'Montserrat', cursive;
-    background: #500087; /* Fundo roxo escuro */
-    color: #FFFFFF; /* Texto branco */
+    padding: 0;
+    background-color: #333; /* Cor de fundo do corpo */
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     height: 100vh;
+    font-family: 'Montserrat', sans-serif; /* Fonte Montserrat */
 }
 
-.vhs-container {
+#gameContainer {
     position: relative;
-    width: 100%;
-    height: 100%;
-    max-width: 400px;
-    max-height: 400px;
-    min-width: 32px;
-    min-height: 32px;
-    overflow: hidden;
-    box-sizing: border-box;
-}
-
-.game-container {
-    text-align: center;
-    width: 90%;
-    height: 90%;
-    background: #500087; /* Fundo roxo escuro */
-    padding: 2px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-sizing: border-box;
-}
-
-#gameOverScreen {
-    display: none;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.8);
-    color: #FFFFFF;
-    padding: 20px;
-    border: 2px solid #FFFFFF;
-    border-radius: 10px;
-    z-index: 10;
-}
-
-#gameOverMessage {
-    margin: 0;
-    font-size: 16px;
-}
-
-#restartButton {
-    background-color: #FFFFFF;
-    color: #500087;
-    border: none;
-    padding: 10px 20px;
-    font-size: 14px;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-#restartButton:hover {
-    background-color: #eee;
-}
-
-h1 {
-    font-size: 15px;
-    margin-bottom: 5px;
-    color: #FFFFFF; /* Texto branco */
-}
-
-p {
-    font-size: 13px;
-    margin: 3px 0;
+    border: 5px solid #500087; /* Borda escura em torno do jogo */
+    padding: 10px;
+    background: #000; /* Cor de fundo do container */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); /* Sombra para um efeito 3D */
 }
 
 #gameCanvas {
-    border: 4px solid #3c0061; /* Borda verde escura */
-    background-color: #500087; /* Fundo roxo escuro */
-    width: calc(80% - 10px); /* Ajusta para evitar corte */
-    height: calc(80% - 10px); /* Ajusta para evitar corte */
-    box-sizing: border-box;
-    border-radius: 10px;
+    display: block;
+    background-color: #500087; /* Cor de fundo do canvas */
+    border: 2px solid #FFFFFF; /* Borda clara do canvas */
+    box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.5); /* Efeito de brilho interno */
 }
 
-.vhs-container::before {
-    content: '';
+#scoreBoard {
     position: absolute;
-    width: 100%;
-    height: 100%;
-    background: repeating-linear-gradient(
-        0deg,
-        #282828 0,
-        #282828 1px,
-        transparent 1px,
-        transparent 2px
-    );
-    z-index: 2;
-    opacity: 0.4;
-    pointer-events: none;
-}
-
-.vhs-container::after {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.2);
-    z-index: 3;
-    mix-blend-mode: multiply;
-    pointer-events: none;
-    opacity: 0.2;
-    animation: vhs 0.1s infinite;
-}
-
-@keyframes vhs {
-    0% { transform: translate(0, 0) scaleX(1); }
-    50% { transform: translate(2px, -2px) scaleX(1.02); }
-    100% { transform: translate(0, 0) scaleX(1); }
-}
-
-.vhs-container::before,
-.vhs-container::after {
-    background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/NTSC_Interlaced_testimage.png/1280px-NTSC_Interlaced_testimage.png');
-    background-size: cover;
-    opacity: 0.05;
+    top: 10px;
+    left: 10px;
+    color: #FFFCE7; /* Cor do texto do placar */
+    font-size: 16px;
+    font-weight: bold;
 }
