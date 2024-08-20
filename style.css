@@ -36,6 +36,39 @@ body {
     box-sizing: border-box;
 }
 
+#gameOverScreen {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: #FFFFFF;
+    padding: 20px;
+    border: 2px solid #FFFFFF;
+    border-radius: 10px;
+    z-index: 10;
+}
+
+#gameOverMessage {
+    margin: 0;
+    font-size: 16px;
+}
+
+#restartButton {
+    background-color: #FFFFFF;
+    color: #500087;
+    border: none;
+    padding: 10px 20px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#restartButton:hover {
+    background-color: #eee;
+}
+
 h1 {
     font-size: 15px;
     margin-bottom: 5px;
