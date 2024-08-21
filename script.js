@@ -35,6 +35,20 @@ let lastFoodType = 'normal'; // Último tipo de comida coletada
 let specialFoodCounter = 0; // Contador para comidas especiais
 let specialFoodActive = { freeze: false, speed: false }; // Verifica se o efeito especial está ativo
 
+// Função para salvar a maior pontuação
+function saveHighScore(score) {
+    let storedHighScore = localStorage.getItem('highScore');
+    if (!storedHighScore || score > storedHighScore) {
+        localStorage.setItem('highScore', score);
+        highScore = score; // Atualiza a variável highScore
+    }
+}
+
+// Função para obter a maior pontuação
+function getHighScore() {
+    return localStorage.getItem('highScore') || 0;
+}
+
 function initGame() {
     snake = [
         { x: Math.floor(tileCountX / 2), y: Math.floor(tileCountY / 2) }
@@ -47,6 +61,10 @@ function initGame() {
     score = 0;
     speed = 250; // Reseta a velocidade inicial
     updateSpeed();
+    updateScore();
+
+    // Carrega a maior pontuação
+    highScore = getHighScore();
     updateScore();
 
     if (intervalId) {
@@ -91,6 +109,7 @@ function changeDirection(event) {
 function gameLoop() {
     if (gameOver) {
         clearInterval(intervalId);
+        saveHighScore(score); // Salva a maior pontuação ao final do jogo
         const overlay = document.getElementById("gameOverOverlay");
         if (overlay) {
             overlay.innerHTML = `<p>Você colidiu! Clique ou aperte R para tentar novamente.</p><button onclick="initGame()">OK</button>`;
@@ -228,11 +247,30 @@ function updateScore() {
 }
 
 function updateSpeed() {
-    if (score % 5 === 0 && score > 0) {
-        speed = Math.max(speed - 10, 50); // Aumenta a dificuldade conforme o score
+    if (intervalId) {
         clearInterval(intervalId);
-        intervalId = setInterval(gameLoop, speed);
     }
+    intervalId = setInterval(gameLoop, speed);
+}
+
+function addPulseEffect(type) {
+    const pulseColor = type === 'freeze' ? '#ADD8E6' :
+        type === 'speed' ? '#FA8072' :
+        type === 'multiply' ? '#00FF00' : '#FFFCE7';
+
+    ctx.strokeStyle = pulseColor;
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.rect(0, 0, canvas.width, canvas.height);
+    ctx.stroke();
+
+    setTimeout(() => {
+        ctx.strokeStyle = "#500087";
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.rect(0, 0, canvas.width, canvas.height);
+        ctx.stroke();
+    }, 500); // Pulsar por 0.5 segundo
 }
 
 function generateFood() {
@@ -242,61 +280,34 @@ function generateFood() {
         y = Math.floor(Math.random() * tileCountY);
     } while (snake.some(segment => segment.x === x && segment.y === y));
 
-    // Decide o tipo de comida
+    // Determine o tipo de comida
     let type = 'normal';
-    if (score >= 1) {
-        // Permite que comidas especiais apareçam
-        if (foodCounter === 0) {
-            if (Math.random() < 0.5) { // 50% de chance de comida especial
-                do {
-                    type = ['freeze', 'speed', 'multiply'][Math.floor(Math.random() * 3)];
-                } while (type === lastFoodType); // Evita repetir o mesmo tipo de comida especial
-            }
-        }
-        lastFoodType = type; // Atualiza o último tipo de comida
+    if (score >= 10 && Math.random() < 0.2 && foodCounter % 5 === 0) {
+        type = 'freeze';
+    } else if (score >= 2 && Math.random() < 0.2 && foodCounter % 5 === 0) {
+        type = 'speed';
+    } else if (Math.random() < 0.25) {
+        type = 'multiply';
     }
 
     return { x, y, type };
 }
 
-function addPulseEffect(type) {
-    const canvasElement = document.getElementById('gameCanvas');
-    canvasElement.style.transition = 'border 1s ease-in-out';
-    switch (type) {
-        case 'freeze':
-            canvasElement.style.border = '5px solid #ADD8E6';
-            break;
-        case 'speed':
-            canvasElement.style.border = '5px solid #FA8072';
-            break;
-        case 'multiply':
-            canvasElement.style.border = '5px solid #00FF00';
-            break;
-    }
-    setTimeout(() => {
-        canvasElement.style.border = '5px solid #282828'; // Reseta a borda
-    }, 1000);
-}
-
 function togglePause() {
-    const overlay = document.getElementById('pauseOverlay');
-    
+    paused = !paused;
+    const overlay = document.getElementById("pauseOverlay");
     if (paused) {
-        paused = false;
-        intervalId = setInterval(gameLoop, speed);
         if (overlay) {
-            overlay.style.display = 'none'; // Ocultar o overlay quando o jogo é retomado
+            overlay.style.display = "block";
         }
     } else {
-        paused = true;
-        clearInterval(intervalId);
         if (overlay) {
-            overlay.style.display = 'block'; // Mostrar o overlay quando o jogo está pausado
+            overlay.style.display = "none";
         }
     }
 }
 
+document.addEventListener("keydown", changeDirection);
 
-window.addEventListener('resize', resizeGame);
-document.addEventListener('keydown', changeDirection);
 resizeGame();
+window.addEventListener("resize", resizeGame);
