@@ -78,9 +78,15 @@ function gameLoop() {
     if (gameOver) {
         clearInterval(intervalId);
         if (score >= 300) {
-            alert(`Você ganhou com ${score} pontos!`);
+            setTimeout(() => {
+                alert(`Você ganhou com ${score} pontos!`);
+                initGame(); // Reinicia o jogo após a mensagem de vitória
+            }, 10);
         } else {
-            alert(`Você colidiu... Tente novamente!`);
+            setTimeout(() => {
+                alert(`Você colidiu... Tente novamente!`);
+                initGame(); // Reinicia o jogo após a mensagem de game over
+            }, 10);
         }
         return;
     }
