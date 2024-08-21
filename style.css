@@ -13,6 +13,7 @@ body {
 
 #gameContainer {
     text-align: center; /* Centraliza o conteúdo do contêiner */
+    margin-top: -15%;
 }
 
 #gameCanvas {
@@ -63,4 +64,83 @@ body {
     font-family: 'Montserrat', sans-serif;
     font-size: 16px;
     margin-top: 10px;
+}
+
+canvas {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    touch-action: none; /* Para evitar que o toque afete o canvas */
+  }
+
+/* Oculta todos os botões por padrão */
+button {
+    display: none;
+}
+
+/* Exibe os botões em dispositivos móveis */
+@media only screen and (max-width: 768px) {
+    button {
+        display: none; /* Exibe os botões em dispositivos móveis */
+        background-color: rgba(120, 0, 203, 0.8); /* Fundo roxo com transparência */
+        color: #FFFFFF; /* Texto branco */
+        border: none; /* Remove borda padrão do botão */
+        border-radius: 5px; /* Borda arredondada */
+        font-size: 24px; /* Tamanho da fonte */
+        width: 50px; /* Largura dos botões */
+        height: 50px; /* Altura dos botões */
+        display: flex; /* Centraliza o texto dentro do botão */
+        align-items: center; /* Alinhamento vertical do texto */
+        justify-content: center; /* Alinhamento horizontal do texto */
+        font-family: 'Montserrat', sans-serif; /* Fonte */
+        margin: 5px; /* Margem entre os botões */
+    }
+
+    button:active {
+        background-color: rgba(120, 0, 203, 1); /* Fundo roxo sólido ao clicar */
+    }
+
+    /* Estilize o contêiner dos controles */
+    #controls {
+        border: transparent;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 10px; /* Ajusta o espaçamento ao redor dos controles */
+        box-sizing: border-box;
+        z-index: 1000; /* Certifique-se de que os controles estão acima do conteúdo do jogo */
+    }
+
+    /* Botões de controle direcional com formato de cruz */
+    #control-buttons {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* Botão de cima */
+    #btn-up {
+        margin-bottom: 5px; /* Espaçamento abaixo do botão de cima */
+    }
+
+    /* Contêiner horizontal para os botões esquerdo e direito */
+    #horizontal-controls {
+        display: flex;
+        justify-content: center;
+        margin: 7px 0; /* Espaçamento entre o grupo horizontal e os botões de cima e baixo */
+    }
+
+    /* Botões de controle horizontal */
+    #horizontal-controls button {
+        margin: 0 18px; /* Aumenta o espaçamento horizontal entre os botões */
+    }
+
+    /* Botão de baixo */
+    #btn-down {
+        margin-top: 5px; /* Espaçamento acima do botão de baixo */
+    }
 }
