@@ -20,20 +20,31 @@
             <div id="score" style="float: left;">Atual: 0</div>
             <div id="highScore" style="float: right;">Maior: 0</div>
         </div>
-        <div id="gameOverOverlay">
+        <div id="gameOverOverlay" style="display: none;">
             <div id="overlayContent">Você colidiu! Aperte R para reiniciar.</div>
         </div>
+        
         <div id="pauseOverlay" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 0, 0, 0.8); color: white; padding: 20px; border-radius: 10px; text-align: center; width: 300px;">
             <h2>Controles</h2>
             <p><strong>Setas:</strong> Mover a cobra</p>
             <p><strong>Espaço:</strong> Pausar/Continuar o jogo</p>
             <p><strong>R:</strong> Reiniciar o jogo</p>
             <p>Pressione Espaço para continuar...</p>
-            <br>
-            <p>v 2.0</p>
         </div>
         
     </div>
+
+    <div id="controls">
+        <div id="control-buttons">
+            <button id="btn-up">↑</button>
+            <div id="horizontal-controls">
+                <button id="btn-left">←</button>
+                <button id="btn-right">→</button>
+            </div>
+            <button id="btn-down">↓</button>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
