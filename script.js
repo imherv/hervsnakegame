@@ -205,22 +205,7 @@ function changeDirection(event) {
             // Baixo e Direita
             if (direction.x === 0) newDirection = { x: 1, y: 1 };
         }
-    } const keyCode = event.keyCode;
-
-    switch (keyCode) {
-        case 37: // Esquerda
-            if (direction.x === 0) newDirection = { x: -1, y: 0 };
-            break;
-        case 38: // Cima
-            if (direction.y === 0) newDirection = { x: 0, y: -1 };
-            break;
-        case 39: // Direita
-            if (direction.x === 0) newDirection = { x: 1, y: 0 };
-            break;
-        case 40: // Baixo
-            if (direction.y === 0) newDirection = { x: 0, y: 1 };
-            break;
-    }
+    } 
 }
 
 // Função que verifica e atualiza o highScore se necessário
@@ -491,46 +476,6 @@ function loadHighScore() {
     }
     updateScore(); // Atualiza a tela com o highScore carregado
 }
-
-document.getElementById('btn-up').addEventListener('click', () => changeDirection({ keyCode: 38 })); // Cima
-document.getElementById('btn-down').addEventListener('click', () => changeDirection({ keyCode: 40 })); // Baixo
-document.getElementById('btn-left').addEventListener('click', () => changeDirection({ keyCode: 37 })); // Esquerda
-document.getElementById('btn-right').addEventListener('click', () => changeDirection({ keyCode: 39 })); // Direita
-
-document.getElementById('btn-up').addEventListener('touchstart', () => changeDirection({ keyCode: 38 })); // Cima
-document.getElementById('btn-down').addEventListener('touchstart', () => changeDirection({ keyCode: 40 })); // Baixo
-document.getElementById('btn-left').addEventListener('touchstart', () => changeDirection({ keyCode: 37 })); // Esquerda
-document.getElementById('btn-right').addEventListener('touchstart', () => changeDirection({ keyCode: 39 })); // Direita
-
-document.addEventListener('DOMContentLoaded', () => {
-    // Adicione o intervalo inicial aqui, se necessário
-    // intervalId = setInterval(gameLoop, speed);
-
-    document.getElementById('btn-pause').addEventListener('click', () => {
-        if (!paused) {
-            clearInterval(intervalId); // Limpa o intervalo para pausar o jogo
-            paused = true;
-            document.getElementById("pauseOverlay").style.display = "block";
-        } else {
-            intervalId = setInterval(gameLoop, speed); // Reinicia o intervalo para retomar o jogo
-            paused = false;
-            document.getElementById("pauseOverlay").style.display = "none";
-        }
-    });
-
-    document.getElementById('btn-pause').addEventListener('touchstart', () => {
-        if (!paused) {
-            clearInterval(intervalId); // Limpa o intervalo para pausar o jogo
-            paused = true;
-            document.getElementById("pauseOverlay").style.display = "block";
-        } else {
-            intervalId = setInterval(gameLoop, speed); // Reinicia o intervalo para retomar o jogo
-            paused = false;
-            document.getElementById("pauseOverlay").style.display = "none";
-        }
-    });
-
-});
 
 canvas.addEventListener('touchstart', handleTouchStart);
 canvas.addEventListener('touchmove', handleTouchMove);
