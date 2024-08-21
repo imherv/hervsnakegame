@@ -92,7 +92,14 @@ function initGame() {
     }
 }
 
+let lastDirectionChange = Date.now(); // Tempo da última mudança de direção
+
 function changeDirection(event) {
+    const now = Date.now();
+    if (now - lastDirectionChange < 100) return; // Ignora mudanças rápidas de direção
+
+    lastDirectionChange = now;
+
     switch (event.keyCode) {
         case 37: // Esquerda
         case 65: // A
@@ -231,6 +238,8 @@ function gameLoop() {
         ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize, gridSize);
     });
 }
+
+requestAnimationFrame(gameLoop); // Usa requestAnimationFrame para uma animação mais suave
 
 function getFoodColor(type) {
     switch(type) {
