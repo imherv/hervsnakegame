@@ -8,28 +8,30 @@
     <link rel="icon" href="https://mcusercontent.com/df4af608fbb01e19f067128d7/images/aa8c4cec-3d83-0689-9245-b06b7deab77a.png" type="image/x-icon">
     <link rel="shortcut icon" href="https://mcusercontent.com/df4af608fbb01e19f067128d7/images/aa8c4cec-3d83-0689-9245-b06b7deab77a.png" type="image/x-icon">
     <link rel="icon" href="https://mcusercontent.com/df4af608fbb01e19f067128d7/images/aa8c4cec-3d83-0689-9245-b06b7deab77a.png" type="image/png">
-    
 </head>
 <body>
-        
     <div id="gameContainer">
-
         <a href="https://linktr.ee/hervdesign" target="_blank">
             <img src="https://mcusercontent.com/df4af608fbb01e19f067128d7/images/aa8c4cec-3d83-0689-9245-b06b7deab77a.png" alt="Herv Design | Logo" style="height: 100px;">
-              </a>
-
-              <br>
-
+        </a>
+        <br>
         <canvas id="gameCanvas"></canvas>
         <div id="scoreBoard">
             <div id="score" style="float: left;">Atual: 0</div>
             <div id="highScore" style="float: right;">Maior: 0</div>
         </div>
-
         <div id="gameOverOverlay">
             <div id="overlayContent">Você colidiu! Aperte R para reiniciar.</div>
         </div>
-            
+        <div id="pauseOverlay" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 0, 0, 0.8); color: white; padding: 20px; border-radius: 10px; text-align: center; width: 300px;">
+            <h2>Controles</h2>
+            <p><strong>Setas:</strong> Mover a cobra</p>
+            <p><strong>Espaço:</strong> Pausar/Continuar o jogo</p>
+            <p><strong>R:</strong> Reiniciar o jogo</p>
+            <p>Pressione Espaço para continuar...</p>
+        </div>
+        
+    </div>
     <script src="script.js"></script>
 </body>
 </html>
