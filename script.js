@@ -4,11 +4,11 @@ const ctx = canvas.getContext("2d");
 let tileCountX, tileCountY, gridSize;
 
 function resizeGame() {
-    const containerWidth = canvas.parentElement.clientWidth - 20; // Subtrai margem para evitar cortes
-    const containerHeight = canvas.parentElement.clientHeight - 20; // Subtrai margem para evitar cortes
-    const size = Math.min(containerWidth, containerHeight, 380); // Ajusta o tamanho máximo para 380x380
+    const containerWidth = canvas.parentElement.clientWidth - 20;
+    const containerHeight = canvas.parentElement.clientHeight - 20;
+    const size = Math.min(containerWidth, containerHeight, 380); // Ajuste do tamanho máximo
 
-    gridSize = Math.floor(size / 20); // tamanho dinâmico do grid
+    gridSize = Math.floor(size / 20); // Tamanho dinâmico do grid
     canvas.width = canvas.height = size;
 
     tileCountX = Math.floor(canvas.width / gridSize);
@@ -22,33 +22,29 @@ let food = {};
 let direction = {};
 let newDirection = {};
 let gameOver = false;
-let isPaused = false; // Adiciona uma variável para controlar o estado de pausa
-let speed = 250;
+let speed = 250; // Velocidade padrão, inicial e máxima
 let intervalId;
 let score = 0;
 let highScore = 0;
+let paused = false;
 
 function initGame() {
     snake = [
         { x: Math.floor(tileCountX / 2), y: Math.floor(tileCountY / 2) }
     ];
-    food = {
-        x: Math.floor(Math.random() * tileCountX),
-        y: Math.floor(Math.random() * tileCountY)
-    };
+    food = generateFood();
     direction = { x: 1, y: 0 };
     newDirection = { x: 1, y: 0 };
     gameOver = false;
-    isPaused = false; // Reinicia o estado de pausa
+    paused = false;
     score = 0;
-    speed = 250;
+    updateSpeed();
+    updateScore();
 
     if (intervalId) {
         clearInterval(intervalId);
     }
     intervalId = setInterval(gameLoop, speed);
-
-    updateScore();
 }
 
 function changeDirection(event) {
@@ -69,30 +65,27 @@ function changeDirection(event) {
         case 83: // S
             if (direction.y === 0) newDirection = { x: 0, y: 1 };
             break;
-        case 82: // R
-            if (gameOver) {
-                initGame(); // Reinicia o jogo mantendo o high score
-            }
+        case 32: // Espaço para pausar
+            togglePause();
             break;
-        case 32: // Espaço
-            if (!gameOver) {
-                isPaused = !isPaused; // Alterna o estado de pausa
-            }
+        case 82: // R para reiniciar em qualquer momento
+            initGame();
             break;
     }
 }
 
 function gameLoop() {
     if (gameOver) {
-        if (confirm("Game Over! Deseja reiniciar?")) {
-            initGame(); // Reinicia o jogo mantendo o high score
+        clearInterval(intervalId);
+        if (score >= 300) {
+            alert(`Você ganhou com ${score} pontos!`);
+        } else {
+            alert(`Você colidiu... Tente novamente!`);
         }
         return;
     }
 
-    if (isPaused) {
-        return; // Se o jogo estiver pausado, não faz nada
-    }
+    if (paused) return;
 
     direction = newDirection; // Atualiza a direção com a nova direção
 
@@ -110,19 +103,10 @@ function gameLoop() {
     snake.unshift(head);
 
     if (head.x === food.x && head.y === food.y) {
-        food = {
-            x: Math.floor(Math.random() * tileCountX),
-            y: Math.floor(Math.random() * tileCountY)
-        };
-
+        food = generateFood();
         score++;
         updateScore();
-
-        if (score % 10 === 0 && speed > 50) {
-            speed -= 20;
-            clearInterval(intervalId);
-            intervalId = setInterval(gameLoop, speed);
-        }
+        updateSpeed();
     } else {
         snake.pop();
     }
@@ -136,12 +120,65 @@ function gameLoop() {
     });
 
     ctx.fillStyle = "#FFFCE7"; // Cor da comida
-    ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize, gridSize);
+    ctx.beginPath();
+    ctx.arc(food.x * gridSize + gridSize / 2, food.y * gridSize + gridSize / 2, gridSize / 2 - 2, 0, Math.PI * 2);
+    ctx.fill();
 }
 
 function updateScore() {
-    document.getElementById("score").innerText = `Pontos: ${score}`;
-    document.getElementById("highScore").innerText = `Pontuação mais alta: ${highScore}`;
+    document.getElementById("score").innerText = `Atual: ${score}`;
+    document.getElementById("highScore").innerText = `Maior: ${highScore}`;
+}
+
+function updateSpeed() {
+    let newSpeed = 250;
+    if (score >= 300) newSpeed = 100;
+    else if (score >= 250) newSpeed = 100;
+    else if (score >= 100) newSpeed = 125;
+    else if (score >= 75) newSpeed = 150;
+    else if (score >= 50) newSpeed = 175;
+    else if (score >= 25) newSpeed = 200;
+    else if (score >= 10) newSpeed = 225;
+
+    if (newSpeed < 50) newSpeed = 50; // Mantém a velocidade mínima de 50ms
+
+    if (speed !== newSpeed) {
+        speed = newSpeed;
+        clearInterval(intervalId);
+        intervalId = setInterval(gameLoop, speed);
+    }
+}
+
+function togglePause() {
+    paused = !paused;
+    if (paused) {
+        clearInterval(intervalId);
+    } else {
+        intervalId = setInterval(gameLoop, speed);
+    }
+}
+
+function generateFood() {
+    let x, y;
+    do {
+        x = Math.floor(Math.random() * tileCountX);
+        y = Math.floor(Math.random() * tileCountY);
+    } while (snake.some(segment => segment.x === x && segment.y === y) || isFoodOnEdge(x, y));
+    return { x, y };
+}
+
+function isFoodOnEdge(x, y) {
+    const edgeChance = getEdgeChance();
+    const edge = (x === 0 || x === tileCountX - 1 || y === 0 || y === tileCountY - 1);
+    return edge && Math.random() * 100 < edgeChance;
+}
+
+function getEdgeChance() {
+    if (score >= 300) return 0;
+    if (score >= 200) return 5;
+    if (score >= 100) return 10;
+    if (score >= 50) return 15;
+    return 20;
 }
 
 window.addEventListener("resize", resizeGame);
