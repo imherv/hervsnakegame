@@ -42,7 +42,7 @@ function initGame() {
     food = [generateFood()];
     direction = { x: 1, y: 0 };
     newDirection = { x: 1, y: 0 };
-    gameOver = false;
+    gameOver = false; // Garante que o jogo não esteja em estado de game over ao iniciar
     paused = false;
     score = 0;
     speed = 250; // Reseta a velocidade inicial
@@ -93,7 +93,7 @@ function gameLoop() {
         clearInterval(intervalId);
         const overlay = document.getElementById("gameOverOverlay");
         if (overlay) {
-            overlay.innerHTML = <p>Você colidiu! Clique ou aperte R para tentar novamente.</p><button onclick="initGame()">OK</button>;
+            overlay.innerHTML = '<p>Você colidiu! Clique ou aperte R para tentar novamente.</p><button onclick="initGame()">OK</button>';
             overlay.style.display = "block";
             overlay.style.position = "absolute";
             overlay.style.top = "50%";
@@ -219,11 +219,11 @@ function updateScore() {
     const highScoreElement = document.getElementById("highScore");
 
     if (scoreElement) {
-        scoreElement.innerText = Atual: ${score};
+        scoreElement.innerText = `Atual: ${score}`;
     }
 
     if (highScoreElement) {
-        highScoreElement.innerText = Maior: ${highScore};
+        highScoreElement.innerText = `Maior: ${highScore}`;
     }
 }
 
@@ -236,67 +236,48 @@ function updateSpeed() {
 }
 
 function generateFood() {
-    let x, y;
-    do {
-        x = Math.floor(Math.random() * tileCountX);
-        y = Math.floor(Math.random() * tileCountY);
-    } while (snake.some(segment => segment.x === x && segment.y === y));
+    const specialFoodChance = 0.25;
+    const specialFoodTypes = ['freeze', 'speed', 'multiply'];
+    const isSpecialFood = Math.random() < specialFoodChance;
 
-    // Decide o tipo de comida
-    let type = 'normal';
-    if (score >= 1) {
-        // Permite que comidas especiais apareçam
-        if (foodCounter === 0) {
-            if (Math.random() < 0.5) { // 50% de chance de comida especial
-                do {
-                    type = ['freeze', 'speed', 'multiply'][Math.floor(Math.random() * 3)];
-                } while (type === lastFoodType); // Evita repetir o mesmo tipo de comida especial
-            }
-        }
-        lastFoodType = type; // Atualiza o último tipo de comida
+    let foodType = 'normal';
+    if (isSpecialFood && specialFoodCounter < 1) {
+        foodType = specialFoodTypes[Math.floor(Math.random() * specialFoodTypes.length)];
+        specialFoodCounter++;
+    } else {
+        specialFoodCounter = 0;
     }
 
-    return { x, y, type };
+    return {
+        x: Math.floor(Math.random() * tileCountX),
+        y: Math.floor(Math.random() * tileCountY),
+        type: foodType
+    };
 }
 
 function addPulseEffect(type) {
-    const canvasElement = document.getElementById('gameCanvas');
-    canvasElement.style.transition = 'border 1s ease-in-out';
-    switch (type) {
-        case 'freeze':
-            canvasElement.style.border = '5px solid #ADD8E6';
-            break;
-        case 'speed':
-            canvasElement.style.border = '5px solid #FA8072';
-            break;
-        case 'multiply':
-            canvasElement.style.border = '5px solid #00FF00';
-            break;
+    const overlay = document.getElementById("gameCanvas");
+
+    if (type === 'freeze' || type === 'speed') {
+        overlay.style.border = `5px solid ${getFoodColor(type)}`;
+        overlay.style.animation = "pulse 0.5s infinite";
+    } else if (type === 'multiply') {
+        overlay.style.border = `5px solid ${getFoodColor(type)}`;
+        overlay.style.animation = "pulse-once 0.5s 1";
     }
+
     setTimeout(() => {
-        canvasElement.style.border = '5px solid #282828'; // Reseta a borda
-    }, 1000);
+        overlay.style.border = `none`;
+        overlay.style.animation = "none";
+    }, 5000);
 }
 
 function togglePause() {
-    const overlay = document.getElementById('pauseOverlay');
-    
-    if (paused) {
-        paused = false;
-        intervalId = setInterval(gameLoop, speed);
-        if (overlay) {
-            overlay.style.display = 'none'; // Ocultar o overlay quando o jogo é retomado
-        }
-    } else {
-        paused = true;
-        clearInterval(intervalId);
-        if (overlay) {
-            overlay.style.display = 'block'; // Mostrar o overlay quando o jogo está pausado
-        }
-    }
+    paused = !paused;
 }
 
+window.addEventListener("keydown", changeDirection);
+window.addEventListener("resize", resizeGame);
 
-window.addEventListener('resize', resizeGame);
-document.addEventListener('keydown', changeDirection);
 resizeGame();
+initGame();
