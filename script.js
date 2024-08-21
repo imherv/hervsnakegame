@@ -45,6 +45,12 @@ function initGame() {
         clearInterval(intervalId);
     }
     intervalId = setInterval(gameLoop, speed);
+
+    // Ocultar o overlay quando o jogo reinicia
+    const overlay = document.getElementById("gameOverOverlay");
+    if (overlay) {
+        overlay.style.display = "none";
+    }
 }
 
 function changeDirection(event) {
@@ -77,16 +83,14 @@ function changeDirection(event) {
 function gameLoop() {
     if (gameOver) {
         clearInterval(intervalId);
-        if (score >= 300) {
-            setTimeout(() => {
-                alert(`Você ganhou com ${score} pontos!`);
-                initGame(); // Reinicia o jogo após a mensagem de vitória
-            }, 10);
-        } else {
-            setTimeout(() => {
-                alert(`Você colidiu... Tente novamente!`);
-                initGame(); // Reinicia o jogo após a mensagem de game over
-            }, 10);
+        const overlay = document.getElementById("gameOverOverlay");
+        if (overlay) {
+            if (score >= 300) {
+                overlay.innerHTML = `<p>Você ganhou com ${score} pontos!</p><button onclick="initGame()">Uhul!</button>`;
+            } else {
+                overlay.innerHTML = `<p>Você colidiu! Aperte R para reiniciar.</p><button onclick="initGame()">OK</button>`;
+            }
+            overlay.style.display = "block"; // Mostrar o overlay
         }
         return;
     }
@@ -132,18 +136,26 @@ function gameLoop() {
 }
 
 function updateScore() {
-    document.getElementById("score").innerText = `Atual: ${score}`;
-    document.getElementById("highScore").innerText = `Maior: ${highScore}`;
+    const scoreElement = document.getElementById("score");
+    const highScoreElement = document.getElementById("highScore");
+
+    if (scoreElement) {
+        scoreElement.innerText = `Atual: ${score}`;
+    }
+
+    if (highScoreElement) {
+        highScoreElement.innerText = `Maior: ${highScore}`;
+    }
 }
 
 function updateSpeed() {
     let newSpeed = 250;
-    if (score >= 300) newSpeed = 100;
-    else if (score >= 250) newSpeed = 100;
-    else if (score >= 100) newSpeed = 125;
-    else if (score >= 75) newSpeed = 150;
-    else if (score >= 50) newSpeed = 175;
-    else if (score >= 25) newSpeed = 200;
+    if (score >= 300) newSpeed = 50;
+    else if (score >= 250) newSpeed = 75;
+    else if (score >= 150) newSpeed = 85;
+    else if (score >= 100) newSpeed = 100;
+    else if (score >= 50) newSpeed = 135;
+    else if (score >= 25) newSpeed = 175;
     else if (score >= 10) newSpeed = 225;
 
     if (newSpeed < 50) newSpeed = 50; // Mantém a velocidade mínima de 50ms
