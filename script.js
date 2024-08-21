@@ -35,11 +35,42 @@ let lastFoodType = 'normal'; // Último tipo de comida coletada
 let specialFoodCounter = 0; // Contador para comidas especiais
 let specialFoodActive = { freeze: false, speed: false }; // Verifica se o efeito especial está ativo
 
+function generateFood() {
+    const specialFoodChance = 0.25;
+    const specialFoodTypes = ['freeze', 'speed', 'multiply'];
+    const isSpecialFood = Math.random() < specialFoodChance;
+
+    let foodType = 'normal';
+    if (isSpecialFood && specialFoodCounter < 1) {
+        foodType = specialFoodTypes[Math.floor(Math.random() * specialFoodTypes.length)];
+        specialFoodCounter++;
+    } else {
+        specialFoodCounter = 0;
+    }
+
+    let foodPosition;
+    let validPosition = false;
+    while (!validPosition) {
+        foodPosition = {
+            x: Math.floor(Math.random() * tileCountX),
+            y: Math.floor(Math.random() * tileCountY)
+        };
+
+        // Verifica se a posição da comida não está sobre o corpo da cobra
+        validPosition = !snake.some(segment => segment.x === foodPosition.x && segment.y === foodPosition.y);
+    }
+
+    return {
+        ...foodPosition,
+        type: foodType
+    };
+}
+
 function initGame() {
     snake = [
         { x: Math.floor(tileCountX / 2), y: Math.floor(tileCountY / 2) }
     ];
-    food = [generateFood()];
+    food = [generateFood()]; // Gera comida inicial
     direction = { x: 1, y: 0 };
     newDirection = { x: 1, y: 0 };
     gameOver = false; // Garante que o jogo não esteja em estado de game over ao iniciar
@@ -202,15 +233,17 @@ function gameLoop() {
 }
 
 function getFoodColor(type) {
-    switch (type) {
+    switch(type) {
         case 'freeze':
-            return '#ADD8E6'; // Cor para comida de congelamento
+            return '#ADD8E6'; // Azul claro para comida de congelamento
         case 'speed':
-            return '#FA8072'; // Cor para comida de velocidade
+            return '#FA8072'; // Salmão para comida de velocidade
         case 'multiply':
-            return '#00FF00'; // Cor para comida de multiplicação
+            return '#00FF00'; // Verde limão para comida de multiplicação
+        case 'normal':
+            return '#FFFFFF'; // Branco para comida normal
         default:
-            return '#FFFCE7'; // Cor padrão para comida comum
+            return '#282828'; // Cor padrão para borda
     }
 }
 
@@ -255,25 +288,88 @@ function generateFood() {
     };
 }
 
+let currentPulseTimeout = null;
+
 function addPulseEffect(type) {
     const overlay = document.getElementById("gameCanvas");
+    let pulseColor;
+    let pulseDuration;
 
-    if (type === 'freeze' || type === 'speed') {
-        overlay.style.border = `5px solid ${getFoodColor(type)}`;
-        overlay.style.animation = "pulse 0.5s infinite";
-    } else if (type === 'multiply') {
-        overlay.style.border = `5px solid ${getFoodColor(type)}`;
-        overlay.style.animation = "pulse-once 0.5s 1";
+    // Define a cor e a duração da pulsação com base no tipo de comida
+    switch (type) {
+        case 'freeze':
+            pulseColor = '#ADD8E6'; // Cor para comida de congelamento
+            pulseDuration = 5000; // Duração de 5 segundos
+            break;
+        case 'speed':
+            pulseColor = '#FA8072'; // Cor para comida de velocidade
+            pulseDuration = 5000; // Duração de 5 segundos
+            break;
+        case 'multiply':
+            pulseColor = '#00FF00'; // Cor para comida de multiplicação
+            pulseDuration = 750; // Pulsação única
+            break;
+        default:
+            return;
     }
 
-    setTimeout(() => {
+    // Remove qualquer animação de pulsação anterior
+    if (currentPulseTimeout) {
+        clearTimeout(currentPulseTimeout);
+    }
+    overlay.style.animation = "none";
+    overlay.style.border = `5px solid #282828`;
+
+    // Adiciona uma folha de estilo temporária para as animações
+    const styleSheet = document.createElement("style");
+    styleSheet.type = "text/css";
+    styleSheet.id = "pulseAnimationStyles";
+    styleSheet.innerHTML = `
+        @keyframes pulse {
+            0% { border-color: ${pulseColor}; }
+            50% { border-color: rgba(${parseInt(pulseColor.slice(1, 3), 16)}, ${parseInt(pulseColor.slice(3, 5), 16)}, ${parseInt(pulseColor.slice(5, 7), 16)}, 0.5); }
+            100% { border-color: ${pulseColor}; }
+        }
+
+        @keyframes pulse-once {
+            0% { border-color: ${pulseColor}; }
+            100% { border-color: ${pulseColor}; }
+        }
+    `;
+    document.head.appendChild(styleSheet);
+
+    // Define a nova animação de pulsação
+    overlay.style.border = `5px solid ${pulseColor}`;
+    overlay.style.animation = `pulse ${pulseDuration}ms ${type === 'multiply' ? 'forwards' : 'infinite'}`;
+
+    // Define um timeout para restaurar a borda padrão após a pulsação
+    currentPulseTimeout = setTimeout(() => {
         overlay.style.border = `5px solid #282828`;
         overlay.style.animation = "none";
-    }, 5000);
+        // Remove a folha de estilo temporária
+        const oldStyleSheet = document.getElementById("pulseAnimationStyles");
+        if (oldStyleSheet) {
+            oldStyleSheet.remove();
+        }
+    }, pulseDuration);
 }
 
 function togglePause() {
     paused = !paused;
+    const pauseOverlay = document.getElementById("pauseOverlay");
+
+    if (!pauseOverlay) {
+        console.error("Elemento 'pauseOverlay' não encontrado no DOM.");
+        return;
+    }
+
+    if (paused) {
+        clearInterval(intervalId);
+        pauseOverlay.style.display = "block"; // Exibe o overlay de pausa
+    } else {
+        intervalId = setInterval(gameLoop, speed);
+        pauseOverlay.style.display = "none"; // Oculta o overlay de pausa
+    }
 }
 
 window.addEventListener("keydown", changeDirection);
