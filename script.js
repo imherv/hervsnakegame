@@ -267,7 +267,7 @@ function addPulseEffect(type) {
     }
 
     setTimeout(() => {
-        overlay.style.border = `none`;
+        overlay.style.border = `5px solid #282828`;
         overlay.style.animation = "none";
     }, 5000);
 }
