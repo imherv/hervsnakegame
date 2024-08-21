@@ -18,7 +18,7 @@ body {
 #gameCanvas {
     display: block;
     background-color: #500087; /* Cor de fundo do canvas */
-    border: 3px solid #282828; /* Borda do canvas */
+    border: 5px solid #282828; /* Borda do canvas */
     border-radius: 10px; /* Bordas arredondadas */
     width: 300px; /* Largura do canvas */
     height: 300px; /* Altura do canvas */
