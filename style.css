@@ -12,27 +12,29 @@ body {
 }
 
 #gameContainer {
-    position: relative;
-    padding: 10px;
-    background: #500087; /* Cor de fundo do container */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Sombra para um efeito suave */
+    text-align: center; /* Centraliza o conteúdo do contêiner */
 }
 
 #gameCanvas {
     display: block;
     background-color: #500087; /* Cor de fundo do canvas */
-    border: 2px solid #FFFCE7; /* Borda clara do canvas para contraste */
+    border: 3px solid #282828; /* Borda do canvas */
+    border-radius: 10px; /* Bordas arredondadas */
+    width: 300px; /* Largura do canvas */
+    height: 300px; /* Altura do canvas */
 }
 
 #scoreBoard {
-    position: absolute;
-    top: 10px;
-    left: 10px;
     color: #FFFCE7; /* Cor do texto do placar */
-    font-size: 16px;
+    font-size: 14px;
     font-weight: bold; /* Texto em negrito */
+    text-align: left; /* Placar alinhado à esquerda */
+    margin-top: 15px; /* Espaçamento entre o canvas e o placar */
+    margin-bottom: 10px; /* Espaçamento abaixo do placar */
+    margin-left: 15px; /* Espaçamento da esquerda */
+    margin-right: 15px; /* Espaçamento da direita */
 }
 
 #scoreBoard div {
-    margin: 0;
+    margin: 0; /* Remove a margem adicional dos itens individuais */
 }
