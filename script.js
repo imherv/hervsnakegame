@@ -99,34 +99,126 @@ function initGame() {
 
 let lastDirectionChange = Date.now(); // Tempo da última mudança de direção
 
+let touchStartX = 0;
+let touchStartY = 0;
+let touchEndX = 0;
+let touchEndY = 0;
+
+function handleTouchStart(event) {
+    // Captura a posição inicial do toque
+    const touch = event.touches[0];
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
+}
+
+function handleTouchMove(event) {
+    // Captura a posição final do toque
+    const touch = event.touches[0];
+    touchEndX = touch.clientX;
+    touchEndY = touch.clientY;
+
+    // Calcula a diferença entre a posição inicial e final
+    const deltaX = touchEndX - touchStartX;
+    const deltaY = touchEndY - touchStartY;
+
+    // Determina a direção do movimento
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        // Movimento horizontal
+        if (deltaX > 0) {
+            // Movimento para a direita
+            if (direction.x === 0) newDirection = { x: 1, y: 0 };
+        } else {
+            // Movimento para a esquerda
+            if (direction.x === 0) newDirection = { x: -1, y: 0 };
+        }
+    } else {
+        // Movimento vertical
+        if (deltaY > 0) {
+            // Movimento para baixo
+            if (direction.y === 0) newDirection = { x: 0, y: 1 };
+        } else {
+            // Movimento para cima
+            if (direction.y === 0) newDirection = { x: 0, y: -1 };
+        }
+    }
+
+    // Atualiza a posição inicial para o próximo movimento
+    touchStartX = touchEndX;
+    touchStartY = touchEndY;
+}
+
+function handleTouchEnd(event) {
+    // Função opcional: pode ser usada para adicionar lógica quando o toque é finalizado
+}
+
+// Adiciona os ouvintes de eventos de toque ao canvas
+canvas.addEventListener('touchstart', handleTouchStart);
+canvas.addEventListener('touchmove', handleTouchMove);
+canvas.addEventListener('touchend', handleTouchEnd);
+
 function changeDirection(event) {
-    const now = Date.now();
-    if (now - lastDirectionChange < 100) return; // Ignora mudanças rápidas de direção
+    if (event.type === 'keydown') {
+        // Eventos de teclado
+        switch (event.keyCode) {
+            case 37: // Esquerda
+            case 65: // A
+                if (direction.x === 0) newDirection = { x: -1, y: 0 };
+                break;
+            case 38: // Cima
+            case 87: // W
+                if (direction.y === 0) newDirection = { x: 0, y: -1 };
+                break;
+            case 39: // Direita
+            case 68: // D
+                if (direction.x === 0) newDirection = { x: 1, y: 0 };
+                break;
+            case 40: // Baixo
+            case 83: // S
+                if (direction.y === 0) newDirection = { x: 0, y: 1 };
+                break;
+            case 32: // Espaço para pausar
+                togglePause();
+                break;
+            case 82: // R para reiniciar em qualquer momento
+                initGame();
+                break;
+        }
+    } else if (event.type === 'touchstart') {
+        // Eventos de toque
+        const touch = event.touches[0];
+        const touchX = touch.clientX;
+        const touchY = touch.clientY;
 
-    lastDirectionChange = now;
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
 
-    switch (event.keyCode) {
+        if (touchX < centerX && touchY < centerY) {
+            // Cima e Esquerda
+            if (direction.x === 0) newDirection = { x: -1, y: -1 };
+        } else if (touchX > centerX && touchY < centerY) {
+            // Cima e Direita
+            if (direction.x === 0) newDirection = { x: 1, y: -1 };
+        } else if (touchX < centerX && touchY > centerY) {
+            // Baixo e Esquerda
+            if (direction.x === 0) newDirection = { x: -1, y: 1 };
+        } else if (touchX > centerX && touchY > centerY) {
+            // Baixo e Direita
+            if (direction.x === 0) newDirection = { x: 1, y: 1 };
+        }
+    } const keyCode = event.keyCode;
+
+    switch (keyCode) {
         case 37: // Esquerda
-        case 65: // A
             if (direction.x === 0) newDirection = { x: -1, y: 0 };
             break;
         case 38: // Cima
-        case 87: // W
             if (direction.y === 0) newDirection = { x: 0, y: -1 };
             break;
         case 39: // Direita
-        case 68: // D
             if (direction.x === 0) newDirection = { x: 1, y: 0 };
             break;
         case 40: // Baixo
-        case 83: // S
             if (direction.y === 0) newDirection = { x: 0, y: 1 };
-            break;
-        case 32: // Espaço para pausar
-            togglePause();
-            break;
-        case 82: // R para reiniciar em qualquer momento
-            initGame();
             break;
     }
 }
@@ -399,6 +491,50 @@ function loadHighScore() {
     }
     updateScore(); // Atualiza a tela com o highScore carregado
 }
+
+document.getElementById('btn-up').addEventListener('click', () => changeDirection({ keyCode: 38 })); // Cima
+document.getElementById('btn-down').addEventListener('click', () => changeDirection({ keyCode: 40 })); // Baixo
+document.getElementById('btn-left').addEventListener('click', () => changeDirection({ keyCode: 37 })); // Esquerda
+document.getElementById('btn-right').addEventListener('click', () => changeDirection({ keyCode: 39 })); // Direita
+
+document.getElementById('btn-up').addEventListener('touchstart', () => changeDirection({ keyCode: 38 })); // Cima
+document.getElementById('btn-down').addEventListener('touchstart', () => changeDirection({ keyCode: 40 })); // Baixo
+document.getElementById('btn-left').addEventListener('touchstart', () => changeDirection({ keyCode: 37 })); // Esquerda
+document.getElementById('btn-right').addEventListener('touchstart', () => changeDirection({ keyCode: 39 })); // Direita
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Adicione o intervalo inicial aqui, se necessário
+    // intervalId = setInterval(gameLoop, speed);
+
+    document.getElementById('btn-pause').addEventListener('click', () => {
+        if (!paused) {
+            clearInterval(intervalId); // Limpa o intervalo para pausar o jogo
+            paused = true;
+            document.getElementById("pauseOverlay").style.display = "block";
+        } else {
+            intervalId = setInterval(gameLoop, speed); // Reinicia o intervalo para retomar o jogo
+            paused = false;
+            document.getElementById("pauseOverlay").style.display = "none";
+        }
+    });
+
+    document.getElementById('btn-pause').addEventListener('touchstart', () => {
+        if (!paused) {
+            clearInterval(intervalId); // Limpa o intervalo para pausar o jogo
+            paused = true;
+            document.getElementById("pauseOverlay").style.display = "block";
+        } else {
+            intervalId = setInterval(gameLoop, speed); // Reinicia o intervalo para retomar o jogo
+            paused = false;
+            document.getElementById("pauseOverlay").style.display = "none";
+        }
+    });
+
+});
+
+canvas.addEventListener('touchstart', handleTouchStart);
+canvas.addEventListener('touchmove', handleTouchMove);
+canvas.addEventListener('touchend', handleTouchEnd);
 
 window.addEventListener("keydown", changeDirection);
 window.addEventListener("resize", resizeGame);
