@@ -38,3 +38,29 @@ body {
 #scoreBoard div {
     margin: 0; /* Remove a margem adicional dos itens individuais */
 }
+
+/* Estilos do overlay */
+#gameOverOverlay {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.8); /* Fundo semi-transparente */
+    border-radius: 10px;
+    padding: 20px;
+    color: #FFFCE7; /* Cor do texto */
+    text-align: center;
+    z-index: 1000; /* Coloca o overlay acima de outros elementos */
+}
+
+#gameOverOverlay button {
+    background-color: #500087;
+    color: #FFFCE7;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    margin-top: 10px;
+}
