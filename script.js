@@ -1,3 +1,6 @@
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
 let tileCountX, tileCountY, gridSize;
 
 function resizeGame() {
@@ -46,11 +49,51 @@ function initGame() {
     updateSpeed();
     updateScore();
 
-	@@ -85,12 +93,16 @@ function gameLoop() {
+    if (intervalId) {
+        clearInterval(intervalId);
+    }
+    intervalId = setInterval(gameLoop, speed);
+
+    // Ocultar o overlay quando o jogo reinicia
+    const overlay = document.getElementById("gameOverOverlay");
+    if (overlay) {
+        overlay.style.display = "none";
+    }
+}
+
+function changeDirection(event) {
+    switch (event.keyCode) {
+        case 37: // Esquerda
+        case 65: // A
+            if (direction.x === 0) newDirection = { x: -1, y: 0 };
+            break;
+        case 38: // Cima
+        case 87: // W
+            if (direction.y === 0) newDirection = { x: 0, y: -1 };
+            break;
+        case 39: // Direita
+        case 68: // D
+            if (direction.x === 0) newDirection = { x: 1, y: 0 };
+            break;
+        case 40: // Baixo
+        case 83: // S
+            if (direction.y === 0) newDirection = { x: 0, y: 1 };
+            break;
+        case 32: // Espaço para pausar
+            togglePause();
+            break;
+        case 82: // R para reiniciar em qualquer momento
+            initGame();
+            break;
+    }
+}
+
+function gameLoop() {
+    if (gameOver) {
         clearInterval(intervalId);
         const overlay = document.getElementById("gameOverOverlay");
         if (overlay) {
-            overlay.innerHTML = `<p>Você colidiu! Clique ou aperte R para tentar novamente.</p><button onclick="initGame()">OK</button>`;
+            overlay.innerHTML = <p>Você colidiu! Clique ou aperte R para tentar novamente.</p><button onclick="initGame()">OK</button>;
             overlay.style.display = "block";
             overlay.style.position = "absolute";
             overlay.style.top = "50%";
@@ -63,7 +106,10 @@ function initGame() {
         }
         return;
     }
-	@@ -101,6 +113,7 @@ function gameLoop() {
+
+    if (paused) return;
+
+    direction = newDirection; // Atualiza a direção com a nova direção
 
     const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
 
@@ -71,7 +117,11 @@ function initGame() {
     if (head.x < 0 || head.x >= tileCountX || head.y < 0 || head.y >= tileCountY || snake.some(segment => segment.x === head.x && segment.y === head.y)) {
         gameOver = true;
         if (score > highScore) {
-	@@ -112,27 +125,93 @@ function gameLoop() {
+            highScore = score;
+        }
+        updateScore();
+        return;
+    }
 
     snake.unshift(head);
 
@@ -165,7 +215,16 @@ function getFoodColor(type) {
 }
 
 function updateScore() {
-	@@ -149,57 +228,75 @@ function updateScore() {
+    const scoreElement = document.getElementById("score");
+    const highScoreElement = document.getElementById("highScore");
+
+    if (scoreElement) {
+        scoreElement.innerText = Atual: ${score};
+    }
+
+    if (highScoreElement) {
+        highScoreElement.innerText = Maior: ${highScore};
+    }
 }
 
 function updateSpeed() {
@@ -221,7 +280,7 @@ function addPulseEffect(type) {
 
 function togglePause() {
     const overlay = document.getElementById('pauseOverlay');
-
+    
     if (paused) {
         paused = false;
         intervalId = setInterval(gameLoop, speed);
@@ -236,6 +295,7 @@ function togglePause() {
         }
     }
 }
+
 
 window.addEventListener('resize', resizeGame);
 document.addEventListener('keydown', changeDirection);
