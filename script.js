@@ -2,13 +2,28 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 let tileCountX, tileCountY, gridSize;
+let snake = [];
+let food = [];
+let direction = {};
+let newDirection = {};
+let gameOver = false;
+let speed = 250;
+let intervalId;
+let score = 0;
+let paused = false;
+let foodCounter = 0;
+let freezeTimeout = null;
+let lastFoodType = 'normal';
+let specialFoodCounter = 0;
+let specialFoodActive = { freeze: false, speed: false };
+let highScore = parseInt(localStorage.getItem('highScore')) || 0;
 
 function resizeGame() {
     const containerWidth = canvas.parentElement.clientWidth;
     const containerHeight = canvas.parentElement.clientHeight;
-    const size = Math.min(containerWidth, containerHeight, 300); // Ajuste do tamanho máximo
+    const size = Math.min(containerWidth, containerHeight, 300);
 
-    gridSize = Math.floor(size / 20); // Tamanho dinâmico do grid
+    gridSize = Math.floor(size / 20);
     canvas.width = canvas.height = size;
 
     tileCountX = Math.floor(canvas.width / gridSize);
@@ -19,21 +34,10 @@ function resizeGame() {
     }
 }
 
-let snake = [];
-let food = [];
-let direction = {};
-let newDirection = {};
-let gameOver = false;
-let speed = 250; // Velocidade inicial
-let intervalId;
-let score = 0;
-let highScore = 0;
-let paused = false;
-let foodCounter = 0; // Contador para comidas comuns
-let freezeTimeout = null; // Timeout para comida de congelamento
-let lastFoodType = 'normal'; // Último tipo de comida coletada
-let specialFoodCounter = 0; // Contador para comidas especiais
-let specialFoodActive = { freeze: false, speed: false }; // Verifica se o efeito especial está ativo
+// Função para salvar o highScore no localStorage
+function saveHighScore() {
+    localStorage.setItem('highScore', highScore);
+}
 
 function generateFood() {
     const specialFoodChance = 0.25;
@@ -67,6 +71,8 @@ function generateFood() {
 }
 
 function initGame() {
+    loadHighScore(); // Carrega o highScore ao iniciar o jogo
+
     snake = [
         { x: Math.floor(tileCountX / 2), y: Math.floor(tileCountY / 2) }
     ];
@@ -76,14 +82,13 @@ function initGame() {
     gameOver = false; // Garante que o jogo não esteja em estado de game over ao iniciar
     paused = false;
     score = 0;
-    speed = 250; // Reseta a velocidade inicial
-    updateSpeed();
-    updateScore();
-
+    speed = 250; // Define a velocidade inicial
     if (intervalId) {
         clearInterval(intervalId);
     }
     intervalId = setInterval(gameLoop, speed);
+    updateSpeed();
+    updateScore();
 
     // Ocultar o overlay quando o jogo reinicia
     const overlay = document.getElementById("gameOverOverlay");
@@ -126,9 +131,19 @@ function changeDirection(event) {
     }
 }
 
+// Função que verifica e atualiza o highScore se necessário
+function checkAndUpdateHighScore() {
+    if (score > highScore) {
+        highScore = score;
+        saveHighScore(); // Salva o novo highScore
+    }
+}
+
 function gameLoop() {
     if (gameOver) {
         clearInterval(intervalId);
+        checkAndUpdateHighScore();
+
         const overlay = document.getElementById("gameOverOverlay");
         if (overlay) {
             overlay.innerHTML = '<p>Você colidiu! Clique ou aperte R para tentar novamente.</p><button onclick="initGame()">OK</button>';
@@ -142,6 +157,8 @@ function gameLoop() {
             overlay.style.padding = "20px";
             overlay.style.borderRadius = "10px";
         }
+
+        updateScore();
         return;
     }
 
@@ -154,10 +171,8 @@ function gameLoop() {
     // Verifica colisão com bordas e com o próprio corpo
     if (head.x < 0 || head.x >= tileCountX || head.y < 0 || head.y >= tileCountY || snake.some(segment => segment.x === head.x && segment.y === head.y)) {
         gameOver = true;
-        if (score > highScore) {
-            highScore = score;
-        }
-        updateScore();
+        checkAndUpdateHighScore(); // Verifica e atualiza o high score no fim do jogo
+        updateScore(); // Atualiza a pontuação e o high score no final do jogo
         return;
     }
 
@@ -364,21 +379,25 @@ function addPulseEffect(type) {
 }
 
 function togglePause() {
-    paused = !paused;
-    const pauseOverlay = document.getElementById("pauseOverlay");
-
-    if (!pauseOverlay) {
-        console.error("Elemento 'pauseOverlay' não encontrado no DOM.");
-        return;
-    }
-
-    if (paused) {
+    if (!paused) {
         clearInterval(intervalId);
-        pauseOverlay.style.display = "block"; // Exibe o overlay de pausa
+        paused = true;
+        document.getElementById("pauseOverlay").style.display = "block";
     } else {
         intervalId = setInterval(gameLoop, speed);
-        pauseOverlay.style.display = "none"; // Oculta o overlay de pausa
+        paused = false;
+        document.getElementById("pauseOverlay").style.display = "none";
     }
+}
+
+function loadHighScore() {
+    const savedScore = parseInt(localStorage.getItem('highScore'));
+    if (!isNaN(savedScore)) {
+        highScore = savedScore;
+    } else {
+        highScore = 0; // Se não houver valor salvo, inicia com 0
+    }
+    updateScore(); // Atualiza a tela com o highScore carregado
 }
 
 window.addEventListener("keydown", changeDirection);
